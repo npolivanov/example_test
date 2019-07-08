@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import store from '../store'
 import axios from 'axios'
 import Users from './Users'
+import 'bootstrap/dist/css/bootstrap.css';
 
 
 const AppTable = styled.div`
@@ -33,6 +34,9 @@ const AppTable = styled.div`
         border: 1px solid #ccc; 
         border-radius: 10px 10px 0px 0px;
     }
+    .fullname {
+        cursor: pointer;
+    }
 `
 
 class Table extends React.Component {
@@ -44,7 +48,6 @@ class Table extends React.Component {
     }
     axiosData () {
         let num = parseInt(store.getState().users.length);
-        
         let _this = this;
         axios( {
             method: 'GET',
@@ -72,15 +75,13 @@ class Table extends React.Component {
               
     }
     componentDidMount() {
-    
-       // console.log(this.state.items);
         this.axiosData();
     }
-    
    render() {
              store.subscribe(() => {
-                 this.setState({items: store.getState()})
+                 this.setState({items: store.getState().users});
             })
+
              let listItem =  store.getState().users.map(function (item) {
                     return <Users item={item} key={item.id} />
             }, 0);
@@ -105,7 +106,7 @@ class Table extends React.Component {
                 </div>
                 { listItem}
                 
-                <button onClick={this.axiosData.bind(this)}>Посмотреть больше</button>
+                <button onClick={this.axiosData.bind(this)} className="btn btn-primary">Посмотреть больше</button>
             </AppTable>
         ) 
    }  

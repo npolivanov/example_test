@@ -9,6 +9,15 @@ function reducer ( state, action ) {
             return {...state, 
                 ...{users: action.payload }
         }
+        case 'EDITOR_ITEMS':
+            return {...state, 
+                ...{users: state.users.map(function(item) {
+                     if (item.id == action.payload.id ) {
+                        item = action.payload.item ;
+                     }   
+                     return item;
+                }) }
+        }
         default:
             return state
     }

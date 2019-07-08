@@ -2,15 +2,16 @@ import React from 'react';
 import styled from 'styled-components';
 import store from '../store';
 import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.css';
 
 const Label = styled.label`
      max-width: 100%;
-     input {
+     display: flex;
+
+    input {
+        max-width: 100%;
         width: 500px;
-     }
-     button {
-        width: 50px;
-     }
+    }
 `
 
 export default class Search extends  React.Component {
@@ -39,7 +40,6 @@ export default class Search extends  React.Component {
                         data.forEach((item) => {
                             result.push(JSON.parse(item));
                         });
-
                         store.dispatch({
                             type: 'SEARCH_ITEMS',
                             payload: result
@@ -53,13 +53,11 @@ export default class Search extends  React.Component {
                 .catch(function (error) {
                          console.log(error);
                 });
-
-        
     }
     render() {
         return <Label>
-             <input type="search" placeholder="search" value={this.state.value} onChange={this.valueChange} />
-             <button   onClick={this.SearchUsers.bind(this)}>Поиск</button>
+             <input className="form-control"   type="search" placeholder="search" value={this.state.value} onChange={this.valueChange} />
+             <button  className="btn btn-info" onClick={this.SearchUsers.bind(this)}>Поиск</button>
             </Label>
     }
 } 
