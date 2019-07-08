@@ -1,8 +1,6 @@
 import React, { useState, useEffect }  from 'react'
 function Users (props) {
     let item = props.item;
-
-   
    return <div className="line" key={item.id} >
          <span>
          {item.fullname}
@@ -17,7 +15,7 @@ function Users (props) {
             {item.city}
              </span>
          <span>
-             12
+             {item.obj}
          </span>
    </div>
      }

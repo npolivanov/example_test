@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
 import Table from'./components/Table';
 import styled from 'styled-components'
+import Search from './components/Search'
+
 const AppStyled = styled.div`
     width: 100%;
     display: flex;
@@ -10,11 +10,13 @@ const AppStyled = styled.div`
     align-items: center;
     flex-direction: column;
 `
+
 class App extends Component {
   render() {
     return (
       <AppStyled>
-          <Table />
+          <Search />
+          <Table args={[]} />
       </AppStyled>
     );
   }

@@ -1,8 +1,10 @@
-import React, {Component }  from 'react'
+import React  from 'react'
 import styled from 'styled-components'
 import store from '../store'
 import axios from 'axios'
 import Users from './Users'
+
+
 const AppTable = styled.div`
     display: flex;
     flex-direction: column;
@@ -34,10 +36,10 @@ const AppTable = styled.div`
 `
 
 class Table extends React.Component {
-    constructor (args = []) {
-        super(args);
+    constructor (psops) {
+        super(psops);
         this.state = {
-            items: args,
+            items: psops.args,
         };
     }
     axiosData () {
@@ -55,12 +57,14 @@ class Table extends React.Component {
                     data.forEach((item) => {
                         result.push(JSON.parse(item));
                     });
+                    
                     store.dispatch({
-                        type: 'INCREMENT',
+                        type: 'ADD_ITEMS',
                         payload: result
                       });
+                 
+                      _this.setState({items:  result });
 
-                      _this.setState({items: result });
                 })
                 .catch(function (error) {
                          console.log(error);
@@ -68,13 +72,17 @@ class Table extends React.Component {
               
     }
     componentDidMount() {
+    
+       // console.log(this.state.items);
         this.axiosData();
     }
-
+    
    render() {
+             store.subscribe(() => {
+                 this.setState({items: store.getState()})
+            })
              let listItem =  store.getState().users.map(function (item) {
-                    console.log("repeat");
-                    return <Users item={item} />
+                    return <Users item={item} key={item.id} />
             }, 0);
         return (
             <AppTable>
@@ -97,7 +105,7 @@ class Table extends React.Component {
                 </div>
                 { listItem}
                 
-                <button onClick={this.axiosData.bind(this)}>Загрузить ещё</button>
+                <button onClick={this.axiosData.bind(this)}>Посмотреть больше</button>
             </AppTable>
         ) 
    }  
