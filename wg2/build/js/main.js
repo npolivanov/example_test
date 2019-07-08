@@ -1,1 +1,0 @@
-$(window).scroll(function(){p=$(this).scrollTop(),$(".parallax").css({transform:"translate(0%, "+p/20+"%)"}),p<=520&&(p=520),$(".startPage").css({"box-shadow":"inset 0px -600px 79px -43px rgba(0,0,0,0."+p+")"}),console.log(p)});
