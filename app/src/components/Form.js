@@ -66,42 +66,42 @@ export default class Form extends React.Component {
     }
     
     render () {
-        return <AppForm>
-            <div>
-                <div className="input-group input_group_users">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">Ф.И.О</span>
-                    </div>
-                    <input  type="text" class="form-control" value={this.state.fullname} onChange={this.fullname.bind(this)} />
+        return<AppForm>
+        <div>
+            <div className="input-group input_group_users">
+                <div className="input-group-prepend">
+                    <span className="input-group-text" id="basic-addon1">Ф.И.О</span>
                 </div>
-
-                <div className="input-group input_group_users">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">Телефон</span>
-                    </div>
-                    <input  type="text" class="form-control" value={this.state.phone} onChange={this.phoneFun.bind(this)}/>
-                </div>
-
-                <div className="input-group input_group_users">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">email</span>
-                    </div>
-                    <input  type="text" class="form-control" value={this.state.email} onChange={this.emailFun.bind(this)}/>
-                </div>
-
-                <div className="input-group input_group_users">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">город проживания</span>
-                    </div>
-                    <input  type="text" class="form-control"  value={this.state.city} onChange={this.cityFun.bind(this)} />
-                </div>
-
-                <h2>List objects:</h2>
-                <div class="list-group" id="list-tab" role="tablist">
-                    <a class="list-group-item list-group-item-action" id="list-home-list" data-toggle="list" href="#list-home" role="tab" aria-controls="home">Тут будет список объектов</a>
-                </div>
+                <input  type="text" className="form-control" value={this.state.fullname} onChange={this.fullname.bind(this)} />
             </div>
-            <button onClick={this.editorUser.bind(this)}>Редактировать</button>
-            </AppForm>
+
+            <div className="input-group input_group_users">
+                <div className="input-group-prepend">
+                    <span className="input-group-text" id="basic-addon1">Телефон</span>
+                </div>
+                <input  type="text" className="form-control" value={this.state.phone} onChange={this.phoneFun.bind(this)}/>
+            </div>
+
+            <div className="input-group input_group_users">
+                <div className="input-group-prepend">
+                    <span className="input-group-text" id="basic-addon1">email</span>
+                </div>
+                <input  type="text" className="form-control" value={this.state.email} onChange={this.emailFun.bind(this)}/>
+            </div>
+
+            <div className="input-group input_group_users">
+                <div className="input-group-prepend">
+                    <span className="input-group-text" id="basic-addon1">город проживания</span>
+                </div>
+                <input  type="text" className="form-control"  value={this.state.city} onChange={this.cityFun.bind(this)} />
+            </div>
+
+            <h2>List objects:</h2>
+            <div className="list-group" id="list-tab" role="tablist">
+                <a className="list-group-item list-group-item-action" id="list-home-list" data-toggle="list" href="#list-home" role="tab" aria-controls="home">Тут будет список объектов</a>
+            </div>
+        </div>
+        <button className="btn btn-primary" onClick={this.editorUser.bind(this)}>Редактировать</button>
+        </AppForm>
     }
 }

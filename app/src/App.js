@@ -2,10 +2,12 @@ import React, { Component } from 'react';
 import Table from'./components/Table';
 import styled from 'styled-components'
 import Search from './components/Search'
+import Add from './components/Add'
 
 const AppStyled = styled.div`
-    width: 100%;
-    height: 100vh;
+    max-width: 100%;
+    width: 800px;
+    margin: auto;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -17,6 +19,7 @@ class App extends Component {
     return (
       <AppStyled>
           <Search />
+          <Add />
           <Table args={[]} />
       </AppStyled>
     );
