@@ -1,8 +1,9 @@
-import React from 'react';
-import store from '../store';
-import styled from 'styled-components';
-import axios from 'axios';
-import 'bootstrap/dist/css/bootstrap.css';
+import React from "react";
+import styled from "styled-components";
+import axios from "axios";
+import "bootstrap/dist/css/bootstrap.css";
+import store from "../store";
+
 const AppForm = styled.div`
     display: flex;
     flex-direction: column;
@@ -13,8 +14,7 @@ const AppForm = styled.div`
         width: 800px;
         padding-top: 20px;
     }
-`
-
+`;
 
 export default class Form extends React.Component {
     constructor ( props ) {
@@ -25,45 +25,46 @@ export default class Form extends React.Component {
                 email: "",
                 city: ""
         };
-       
         this.fullname = this.fullname.bind(this);
         this.phoneFun = this.phoneFun.bind(this);
         this.emailFun = this.emailFun.bind(this);
         this.cityFun = this.cityFun.bind(this);
-    }
+    };
     fullname (event) {
         this.setState({fullname: event.target.value});
-    }
+    };
     phoneFun (event) {
         this.setState({phone: event.target.value});
-    }
+    };
     emailFun (event) {
         this.setState({email: event.target.value});
-    }
+    };
     cityFun (event) {
         this.setState({city: event.target.value});
-    }
+    };
     editorUser () {
-        var data = new FormData();
-        data.append('id', this.state.id);
-        data.append('fullname', this.state.fullname);
-        data.append('phone', this.state.phone);
-        data.append('email', this.state.email);
-        data.append('city', this.state.city);
-
-        axios.post( "http://poliva0s.beget.tech/add.php", data   )
-                .then(function (response) {
-                    let data = response.data;
-                    console.log(data);
-                })
-                .catch(function (error) {
-                         console.log(error);
-                });
-
-    }
+        const data = new FormData();
+        data.append("id", this.state.id);
+        data.append("fullname", this.state.fullname);
+        data.append("phone", this.state.phone);
+        data.append("email", this.state.email);
+        data.append("city", this.state.city);
+        // add new data
+        store.dispatch({
+            type: "ADD_ITEMS",
+            payload: this.state
+        });
+        axios.post( "http://poliva0s.beget.tech/add.php", data) 
+        .then(function (response) {
+            return response;
+        }) .catch(function (error) {
+            return error;
+        });
+    };
     
     render () {
-        return <AppForm>
+        return (
+        <AppForm>
             <div>
                 <div className="input-group input_group_users">
                     <div className="input-group-prepend">
@@ -92,13 +93,9 @@ export default class Form extends React.Component {
                     </div>
                     <input  type="text" className="form-control"  value={this.state.city} onChange={this.cityFun.bind(this)} />
                 </div>
-
-                <h2>List objects:</h2>
-                <div className="list-group" id="list-tab" role="tablist">
-                    <a className="list-group-item list-group-item-action" id="list-home-list" data-toggle="list" href="#list-home" role="tab" aria-controls="home">Тут будет список объектов</a>
-                </div>
             </div>
             <button  className="btn btn-primary" onClick={this.editorUser.bind(this)}>Добавить</button>
-            </AppForm>
-    }
-}
+        </AppForm>
+        );
+    };
+};

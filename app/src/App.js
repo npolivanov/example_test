@@ -20,7 +20,7 @@ class App extends Component {
       <AppStyled>
           <Search />
           <Add />
-          <Table args={[]} />
+          <Table />
       </AppStyled>
     );
   }

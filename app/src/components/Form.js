@@ -1,8 +1,11 @@
-import React from 'react';
-import store from '../store';
-import styled from 'styled-components';
-import axios from 'axios';
-import 'bootstrap/dist/css/bootstrap.css';
+import React from "react";
+import store from "../store";
+import styled from "styled-components";
+import axios from "axios";
+import "bootstrap/dist/css/bootstrap.css";
+import Objects from './Objects';
+import AddObjects from './AddObjects';
+
 const AppForm = styled.div`
     display: flex;
     flex-direction: column;
@@ -13,95 +16,147 @@ const AppForm = styled.div`
         width: 800px;
         padding-top: 20px;
     }
-`
-
+    .addObject {
+        align-self: flex-start;
+    }
+`;
 
 export default class Form extends React.Component {
     constructor ( props ) {
         super(props);
-        this.state = props.items;
+        this.state = {
+            item: props.items,
+            obj: []
+        };
        
         this.fullname = this.fullname.bind(this);
         this.phoneFun = this.phoneFun.bind(this);
         this.emailFun = this.emailFun.bind(this);
         this.cityFun = this.cityFun.bind(this);
-    }
+    };
     fullname (event) {
-        this.setState({fullname: event.target.value});
-    }
+        const items = this.state.item;
+        items.fullname = event.target.value;    
+        this.setState({item: items});
+    };
     phoneFun (event) {
-        this.setState({phone: event.target.value});
-    }
+        const items = this.state.item;
+        items.phone = event.target.value;    
+        this.setState({item: items});
+    };
     emailFun (event) {
-        this.setState({email: event.target.value});
-    }
+        const items = this.state.item;
+        items.email = event.target.value;    
+        this.setState({item: items});
+    };
     cityFun (event) {
-        this.setState({city: event.target.value});
-    }
+        const items = this.state.item;
+        items.city = event.target.value;    
+        this.setState({item: items});
+    };
+    componentDidMount() {
+        const data = new FormData();
+        data.append("id", this.state.item.id);
+        
+        const _this = this;
+        axios.post( "http://poliva0s.beget.tech/listobj.php", data)
+        .then(function (response) {
+            const data = response.data;
+            const result  = [];
+             // data to JSON format
+            data.forEach((item) => {
+                result.push(JSON.parse(item));
+            });
+            _this.setState({obj: result});
+           
+           
+        })
+        .catch(function (error) {
+          return error;
+        });
+    };
     editorUser () {
-        var data = new FormData();
-        data.append('id', this.state.id);
-        data.append('fullname', this.state.fullname);
-        data.append('phone', this.state.phone);
-        data.append('email', this.state.email);
-        data.append('city', this.state.city);
+        const data = new FormData();
+        data.append("id", this.state.item.id);
+        data.append("fullname", this.state.item.fullname);
+        data.append("phone", this.state.item.phone);
+        data.append("email", this.state.item.email);
+        data.append("city", this.state.item.city);
 
-        axios.post( "http://poliva0s.beget.tech/editorUsers.php", data   )
-                .then(function (response) {
-                    let data = response.data;
-                    console.log(response.data);
-                })
-                .catch(function (error) {
-                         console.log(error);
-                });
+        axios.post( "http://poliva0s.beget.tech/editorUsers.php", data)
+        .then(function (response) {
+            return response.data;
+        })
+        .catch(function (error) {
+            return error;
+        });
 
         store.dispatch({
-            type: 'EDITOR_ITEMS',
+            type: "EDITOR_ITEMS",
             payload: {
-                id: this.state.id,
-                item: this.state
+                id: this.state.item.id,
+                item: this.state.item
             }
         });
-        this.props.returnItems(this.state);
+
+        // callback
+        this.props.returnItems(this.state.item);
+    };
+
+    addObjects (item) {
+
+
+        this.setState({ obj: this.state.obj.concat(item) });
+       
     }
-    
     render () {
-        return<AppForm>
-        <div>
-            <div className="input-group input_group_users">
-                <div className="input-group-prepend">
-                    <span className="input-group-text" id="basic-addon1">Ф.И.О</span>
+        const listIObj =  this.state.obj.map( (item, i) => {
+            return (
+               <Objects key={i} items={item} />
+             );
+         }, 0);
+
+        return(
+         <AppForm>
+            <div>
+                <div className="input-group input_group_users">
+                    <div className="input-group-prepend">
+                        <span className="input-group-text" id="basic-addon1">Ф.И.О</span>
+                    </div>
+                    <input  type="text" className="form-control" value={this.state.item.fullname} onChange={this.fullname.bind(this)} />
                 </div>
-                <input  type="text" className="form-control" value={this.state.fullname} onChange={this.fullname.bind(this)} />
+
+                <div className="input-group input_group_users">
+                    <div className="input-group-prepend">
+                        <span className="input-group-text" id="basic-addon1">Телефон</span>
+                    </div>
+                    <input  type="text" className="form-control" value={this.state.item.phone} onChange={this.phoneFun.bind(this)}/>
+                </div>
+
+                <div className="input-group input_group_users">
+                    <div className="input-group-prepend">
+                        <span className="input-group-text" id="basic-addon1">email</span>
+                    </div>
+                    <input  type="text" className="form-control" value={this.state.item.email} onChange={this.emailFun.bind(this)}/>
+                </div>
+
+                <div className="input-group input_group_users">
+                    <div className="input-group-prepend">
+                        <span className="input-group-text" id="basic-addon1">город проживания</span>
+                    </div>
+                    <input  type="text" className="form-control"  value={this.state.item.city} onChange={this.cityFun.bind(this)} />
+                </div>
+
+                <h2>List objects:</h2>
+                <div className="list-group" id="list-tab" role="tablist">
+                    {listIObj}
+         
+                   <AddObjects items={[]} addObjects={this.addObjects.bind(this)} user_id={this.state.item.id} item_id={this.state.obj.length} />
+                </div>
             </div>
 
-            <div className="input-group input_group_users">
-                <div className="input-group-prepend">
-                    <span className="input-group-text" id="basic-addon1">Телефон</span>
-                </div>
-                <input  type="text" className="form-control" value={this.state.phone} onChange={this.phoneFun.bind(this)}/>
-            </div>
-
-            <div className="input-group input_group_users">
-                <div className="input-group-prepend">
-                    <span className="input-group-text" id="basic-addon1">email</span>
-                </div>
-                <input  type="text" className="form-control" value={this.state.email} onChange={this.emailFun.bind(this)}/>
-            </div>
-
-            <div className="input-group input_group_users">
-                <div className="input-group-prepend">
-                    <span className="input-group-text" id="basic-addon1">город проживания</span>
-                </div>
-                <input  type="text" className="form-control"  value={this.state.city} onChange={this.cityFun.bind(this)} />
-            </div>
-
-            <h2>List objects:</h2>
-            <div className="list-group" id="list-tab" role="tablist">
-                <a className="list-group-item list-group-item-action" id="list-home-list" data-toggle="list" href="#list-home" role="tab" aria-controls="home">Тут будет список объектов</a>
-            </div>
-        </div>
-        <button className="btn btn-primary" onClick={this.editorUser.bind(this)}>Редактировать</button>
-        </AppForm>
-    }
-}
+            <button className="btn btn-primary" onClick={this.editorUser.bind(this)}>Редактировать</button>
+         </AppForm>
+        );
+    };
+};

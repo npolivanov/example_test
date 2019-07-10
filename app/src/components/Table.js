@@ -1,9 +1,9 @@
-import React  from 'react'
-import styled from 'styled-components'
-import store from '../store'
-import axios from 'axios'
-import Users from './Users'
-import 'bootstrap/dist/css/bootstrap.css';
+import React  from "react";
+import styled from "styled-components";
+import store from "../store";
+import axios from "axios";
+import Users from "./Users";
+import "bootstrap/dist/css/bootstrap.css";
 
 
 const AppTable = styled.div`
@@ -37,78 +37,101 @@ const AppTable = styled.div`
     .fullname {
         cursor: pointer;
     }
-`
+`;
 
 class Table extends React.Component {
     constructor (psops) {
         super(psops);
         this.state = {
             items: psops.args,
+            viewMore: 1,
+            viewMoreText: "Посмотреть больше"
         };
-    }
+    };
+
     axiosData () {
-        let num = parseInt(store.getState().users.length);
-        let _this = this;
+        const num = parseInt(store.getState().users.length);
+        const _this = this;
+        _this.setState({viewMoreText: <img src={require("../giphy.gif")} style={{width: 40 }} /> });
         axios( {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            url:"http://poliva0s.beget.tech/response.php?num="+ num
+            method: "GET",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            url:"http://poliva0s.beget.tech/response.php?num="+ num,
           })
-                .then(function (response) {
-                    let data = response.data;
-                    let result  = [];
-                    data.forEach((item) => {
-                        result.push(JSON.parse(item));
-                    });
-                    
-                    store.dispatch({
-                        type: 'ADD_ITEMS',
-                        payload: result
-                      });
-                 
-                      _this.setState({items:  result });
+         .then(function (response) {
+            const data = response.data;
+            const result  = [];
+             // data to JSON format
+            data.forEach((item) => {
+                result.push(JSON.parse(item));
+            });
+             // add new data
+             store.dispatch({
+                 type: "ADD_ITEMS",
+                 payload: result
+             });
+            if(result.length < 3) {
+                 _this.setState({viewMore:  0 });
+            }
+             // change state items
+             _this.setState({items:  result });
+         })
+         .catch(function (error) {
+            alert("ошибка запроса");
+         })
+         .finally(function () {
+            // state the after request
+              _this.setState({viewMoreText: "Посмотреть больше" });
+         });
+    };
 
-                })
-                .catch(function (error) {
-                         console.log(error);
-                });
-              
-    }
     componentDidMount() {
+        // load the first three users
         this.axiosData();
-    }
-   render() {
-             store.subscribe(() => {
-                 this.setState({items: store.getState().users});
-            })
+    };
 
-             let listItem =  store.getState().users.map(function (item) {
-                    return <Users item={item} key={item.id} />
-            }, 0);
+   render() {
+        // subscribe to change data
+        store.subscribe(() => {
+            this.setState({items: store.getState().users});
+         });
+        // output all users
+        const listItem =  store.getState().users.map(function (item) {
+            return <Users item={item} key={item.id} />
+         }, 0);
+
+        // showing button loader
+        let button;
+        if(this.state.viewMore) {
+            button = <button onClick={this.axiosData.bind(this)} className="btn btn-primary">{ this.state.viewMoreText }</button>;
+        }else {
+            button = "";
+        };
+
         return (
             <AppTable>
                 <div className="line header_line_table">
                     <span>
                         Ф.И.О
                     </span>
-                        <span>
+                     <span>
                         Телефон
-                        </span>
+                     </span>
                     <span>
                         Email
-                        </span>
-                        <span>
+                    </span>
+                    <span>
                         город проживания
-                        </span>
+                    </span>
                     <span>
                         кол-во не отключенных объектов
                     </span>
                 </div>
                 { listItem}
-                
-                <button onClick={this.axiosData.bind(this)} className="btn btn-primary">Посмотреть больше</button>
+                {button}
             </AppTable>
-        ) 
-   }  
-}
+        );
+   };  
+};
+
 export default Table;
