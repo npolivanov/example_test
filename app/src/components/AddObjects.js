@@ -154,11 +154,13 @@ export default class AddObjects extends React.Component {
                         </select>
                     </div>
                     <input
+                        type="date"
                         value={this.state.item.date_include}
                         onChange={this.inputAfter}
                         className="form-control"
                     />
                     <input
+                        type="date"
                         value={this.state.item.date_diactive}
                         onChange={this.inputBefore}
                         className="form-control"

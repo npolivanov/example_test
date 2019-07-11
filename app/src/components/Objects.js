@@ -2,18 +2,29 @@ import React from "react";
 import styled from "styled-components";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.css";
+import * as Yup from "yup";
+import { Formik, Field } from "formik";
 
 const Ul = styled.ul`
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    button {
-        align-self: flex-end;
-        margin-top: 10px;
-    }
-
-    div {
+    form .item {
         display: flex;
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
+        input {
+            max-width: 100%;
+            width: 800px;
+            margin: 10px;
+        }
+        select {
+            max-width: 100%;
+            width: 800px;
+            margin: 10px;
+        }
+    }
+    form button {
+        display: block;
+        margin: auto;
     }
     width: 100%;
 `;
@@ -25,11 +36,7 @@ export default class Objects extends React.Component {
             item: props.items,
             servies: [],
         };
-        this.changeServes = this.changeServes.bind(this);
-        this.inputBefore = this.inputBefore.bind(this);
-        this.inputAfter = this.inputAfter.bind(this);
-        this.selectType = this.selectType.bind(this);
-        this.selectStatus = this.selectStatus.bind(this);
+
         this.status = ["Действует", "Ожидает оплаты", "Отключён"];
         this.type = ["Недвижимость", "Авто"];
     }
@@ -53,27 +60,6 @@ export default class Objects extends React.Component {
             .catch(function(error) {
                 return error;
             });
-    }
-
-    inputAfter(event) {
-        const items = this.state.item;
-        items.date_include = event.target.value;
-        this.setState({ item: items });
-    }
-    inputBefore(event) {
-        const items = this.state.item;
-        items.date_diactive = event.target.value;
-        this.setState({ item: items });
-    }
-    selectType(event) {
-        const items = this.state.item;
-        items.type = event.target.value;
-        this.setState({ item: items });
-    }
-    selectStatus(event) {
-        const items = this.state.item;
-        items.status = event.target.value;
-        this.setState({ item: items });
     }
 
     changeServes(index) {
@@ -136,47 +122,129 @@ export default class Objects extends React.Component {
 
         return (
             <Ul className="list-group-item list-group-item-action">
-                <div>
-                    <div className="form-group col-md-4">
-                        <select
-                            id="inputState"
-                            className="form-control"
-                            onChange={this.selectType}
-                            value={this.state.item.type}
-                        >
-                            {type_item}
-                        </select>
-                    </div>
-                    <input
-                        value={this.state.item.date_include}
-                        onChange={this.inputAfter}
-                        className="form-control"
-                    />
-                    <input
-                        value={this.state.item.date_diactive}
-                        onChange={this.inputBefore}
-                        className="form-control"
-                    />
-                    <div className="form-group col-md-4">
-                        <select
-                            className="form-control"
-                            onChange={this.selectStatus}
-                            value={this.state.item.status}
-                        >
-                            {status_item}
-                        </select>
-                    </div>
-                </div>
+                <Formik
+                    initialValues={{
+                        type: this.state.item.type,
+                        date_include: this.state.item.date_include,
+                        date_diactive: this.state.item.date_diactive,
+                        status: this.state.item.status,
+                    }}
+                    validationSchema={Yup.object().shape({
+                        date_include: Yup.date().required("Required"),
+                        date_diactive: Yup.date().required("Required"),
+                    })}
+                    onSubmit={(values, { setSubmitting }) => {
+                        const data = new FormData();
+                        data.append("id", this.state.item.id);
+                        data.append("type", values.select_type);
+                        data.append("status", values.select_status);
+                        data.append("date_include", values.date_include);
+                        data.append("date_diactive", values.date_diactive);
+
+                        axios
+                            .post(
+                                "http://poliva0s.beget.tech/updateObj.php",
+                                data
+                            )
+                            .then(function(response) {
+                                return response.data;
+                            })
+                            .catch(function(error) {
+                                return error;
+                            });
+                    }}
+                >
+                    {props => {
+                        const {
+                            values,
+                            errors,
+                            handleChange,
+                            handleBlur,
+                            handleSubmit,
+                        } = props;
+                        return (
+                            <form onSubmit={handleSubmit}>
+                                <div className="item">
+                                    <div className="form-group">
+                                        <Field
+                                            component="select"
+                                            name="select_type"
+                                            className="form-control"
+                                            onChange={handleChange}
+                                        >
+                                            <option
+                                                value="Недвижимость"
+                                                id="select_type1"
+                                            >
+                                                Недвижимость
+                                            </option>
+                                            <option
+                                                value="Авто"
+                                                id="select_type2"
+                                            >
+                                                Авто
+                                            </option>
+                                        </Field>
+                                    </div>
+                                    <input
+                                        id="date_include"
+                                        type="date"
+                                        value={values.date_include}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        className="form-control"
+                                    />
+                                    <input
+                                        id="date_diactive"
+                                        type="date"
+                                        value={values.date_diactive}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        className="form-control"
+                                    />
+                                    <div className="form-group">
+                                        <Field
+                                            component="select"
+                                            className="form-control"
+                                            onChange={handleChange}
+                                            name="select_status"
+                                        >
+                                            <option value="Действует">
+                                                Действует
+                                            </option>
+                                            <option value="Ожидает оплаты">
+                                                Ожидает оплаты
+                                            </option>
+                                            <option value="Отключён">
+                                                Отключён
+                                            </option>
+                                        </Field>
+                                    </div>
+                                </div>
+                                {errors.date_include ? (
+                                    <p
+                                        className="alert alert-danger"
+                                        role="alert"
+                                    >
+                                        {errors.date_include}
+                                    </p>
+                                ) : (
+                                    ""
+                                )}
+                                <button
+                                    type="submit"
+                                    className="btn btn-success"
+                                >
+                                    Обновить объект
+                                </button>
+                            </form>
+                        );
+                    }}
+                </Formik>
                 <ol>
                     Услуги:
                     {servies}
                 </ol>
-                <button
-                    className="btn btn-success"
-                    onClick={this.updateFun.bind(this)}
-                >
-                    Обновить объект
-                </button>
             </Ul>
         );
     }

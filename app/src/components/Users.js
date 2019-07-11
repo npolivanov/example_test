@@ -17,21 +17,16 @@ class Users extends React.Component {
         this.setState({ item: item });
     }
     render() {
-        let form;
-
-        if (this.state.viewForm) {
-            form = (
-                <Form
-                    returnItems={this.returnItems.bind(this)}
-                    items={this.state.item}
-                />
-            );
-        } else {
-            form = "";
-        }
         return (
             <div>
-                {form}
+                {this.state.viewForm ? (
+                    <Form
+                        returnItems={this.returnItems.bind(this)}
+                        items={this.state.item}
+                    />
+                ) : (
+                    ""
+                )}
                 <div className="line" key={this.state.item.id}>
                     <span
                         className="fullname"
@@ -42,10 +37,10 @@ class Users extends React.Component {
                     >
                         {this.state.item.fullname}
                     </span>
-                    <span>{this.state.item.phone}</span>
+                    <span>+{this.state.item.phone}</span>
                     <span>{this.state.item.email}</span>
                     <span>{this.state.item.city}</span>
-                    <span>{this.state.item.obj}</span>
+                    <span>{this.state.item[5]}</span>
                 </div>
             </div>
         );

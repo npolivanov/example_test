@@ -71,6 +71,7 @@ class Table extends React.Component {
                 data.forEach(item => {
                     result.push(JSON.parse(item));
                 });
+                console.log(result);
                 // add new data
                 store.dispatch({
                     type: "ADD_ITEMS",

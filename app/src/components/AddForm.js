@@ -3,6 +3,8 @@ import styled from "styled-components";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.css";
 import store from "../store";
+import * as Yup from "yup";
+import { Formik } from "formik";
 
 const AppForm = styled.div`
     display: flex;
@@ -16,131 +18,211 @@ const AppForm = styled.div`
     }
 `;
 export default class Form extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            fullname: "",
-            phone: "",
-            email: "",
-            city: "",
-        };
-        this.fullname = this.fullname.bind(this);
-        this.phoneFun = this.phoneFun.bind(this);
-        this.emailFun = this.emailFun.bind(this);
-        this.cityFun = this.cityFun.bind(this);
-    }
-    fullname(event) {
-        this.setState({ fullname: event.target.value });
-    }
-    phoneFun(event) {
-        this.setState({ phone: event.target.value });
-    }
-    emailFun(event) {
-        this.setState({ email: event.target.value });
-    }
-    cityFun(event) {
-        this.setState({ city: event.target.value });
-    }
-    editorUser() {
-        const data = new FormData();
-        data.append("id", this.state.id);
-        data.append("fullname", this.state.fullname);
-        data.append("phone", this.state.phone);
-        data.append("email", this.state.email);
-        data.append("city", this.state.city);
-        // add new data
-        store.dispatch({
-            type: "ADD_ITEMS",
-            payload: this.state,
-        });
-        axios
-            .post("http://poliva0s.beget.tech/add.php", data)
-            .then(function(response) {
-                return response;
-            })
-            .catch(function(error) {
-                return error;
-            });
-    }
-
     render() {
         return (
             <AppForm>
-                <div>
-                    <div className="input-group input_group_users">
-                        <div className="input-group-prepend">
-                            <span
-                                className="input-group-text"
-                                id="basic-addon1"
-                            >
-                                Ф.И.О
-                            </span>
-                        </div>
-                        <input
-                            type="text"
-                            className="form-control"
-                            value={this.state.fullname}
-                            onChange={this.fullname.bind(this)}
-                        />
-                    </div>
+                <Formik
+                    onSubmit={(values, { setSubmitting }) => {
+                        const data = new FormData();
+                        const new_user = {
+                            fullname: values.fullname,
+                            phone: values.phone,
+                            email: values.email,
+                            city: values.city,
+                        };
+                        // add new data
+                        store.dispatch({
+                            type: "ADD_ITEMS",
+                            payload: new_user,
+                        });
+                        data.append("fullname", values.fullname);
+                        data.append("phone", values.phone);
+                        data.append("email", values.email);
+                        data.append("city", values.city);
 
-                    <div className="input-group input_group_users">
-                        <div className="input-group-prepend">
-                            <span
-                                className="input-group-text"
-                                id="basic-addon1"
-                            >
-                                Телефон
-                            </span>
-                        </div>
-                        <input
-                            type="text"
-                            className="form-control"
-                            value={this.state.phone}
-                            onChange={this.phoneFun.bind(this)}
-                        />
-                    </div>
-
-                    <div className="input-group input_group_users">
-                        <div className="input-group-prepend">
-                            <span
-                                className="input-group-text"
-                                id="basic-addon1"
-                            >
-                                email
-                            </span>
-                        </div>
-                        <input
-                            type="text"
-                            className="form-control"
-                            value={this.state.email}
-                            onChange={this.emailFun.bind(this)}
-                        />
-                    </div>
-
-                    <div className="input-group input_group_users">
-                        <div className="input-group-prepend">
-                            <span
-                                className="input-group-text"
-                                id="basic-addon1"
-                            >
-                                город проживания
-                            </span>
-                        </div>
-                        <input
-                            type="text"
-                            className="form-control"
-                            value={this.state.city}
-                            onChange={this.cityFun.bind(this)}
-                        />
-                    </div>
-                </div>
-                <button
-                    className="btn btn-primary"
-                    onClick={this.editorUser.bind(this)}
+                        axios
+                            .post(
+                                "http://poliva0s.beget.tech/editorUsers.php",
+                                data
+                            )
+                            .then(function(response) {
+                                return response.data;
+                            })
+                            .catch(function(error) {
+                                return error;
+                            });
+                    }}
+                    initialValues={{
+                        fullname: "",
+                        phone: "",
+                        email: "",
+                        city: "",
+                    }}
+                    validationSchema={Yup.object().shape({
+                        fullname: Yup.string()
+                            .min(3)
+                            .max(100)
+                            .required("Required"),
+                        phone: Yup.number()
+                            .min(4)
+                            .required("Required"),
+                        email: Yup.string()
+                            .email()
+                            .required("Required"),
+                        city: Yup.string()
+                            .min(2)
+                            .default(() => "Saratov"),
+                    })}
                 >
-                    Добавить
-                </button>
+                    {props => {
+                        const {
+                            values,
+                            errors,
+                            handleChange,
+                            handleBlur,
+                            handleSubmit,
+                        } = props;
+
+                        return (
+                            <form onSubmit={handleSubmit}>
+                                <div className="input-group input_group_users">
+                                    <div className="input-group-prepend">
+                                        <span
+                                            className="input-group-text"
+                                            id="basic-addon1"
+                                        >
+                                            Ф.И.О
+                                        </span>
+                                    </div>
+                                    <input
+                                        id="fullname"
+                                        type="text"
+                                        className={
+                                            errors.fullname
+                                                ? "form-control is-invalid"
+                                                : "form-control"
+                                        }
+                                        value={values.fullname}
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                {errors.fullname ? (
+                                    <p
+                                        className="alert alert-danger"
+                                        role="alert"
+                                    >
+                                        {errors.fullname}
+                                    </p>
+                                ) : (
+                                    ""
+                                )}
+                                <div className="input-group input_group_users">
+                                    <div className="input-group-prepend">
+                                        <span
+                                            className="input-group-text"
+                                            id="basic-addon1"
+                                        >
+                                            Телефон
+                                        </span>
+                                    </div>
+                                    <input
+                                        id="phone"
+                                        type="text"
+                                        className={
+                                            errors.phone
+                                                ? "form-control is-invalid"
+                                                : "form-control"
+                                        }
+                                        value={values.phone}
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                {errors.phone ? (
+                                    <p
+                                        className="alert alert-danger"
+                                        role="alert"
+                                    >
+                                        {errors.phone}
+                                    </p>
+                                ) : (
+                                    ""
+                                )}
+                                <div className="input-group input_group_users">
+                                    <div className="input-group-prepend">
+                                        <span
+                                            className="input-group-text"
+                                            id="basic-addon1"
+                                        >
+                                            email
+                                        </span>
+                                    </div>
+                                    <input
+                                        id="email"
+                                        type="text"
+                                        className={
+                                            errors.email
+                                                ? "form-control is-invalid"
+                                                : "form-control"
+                                        }
+                                        value={values.email}
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                {errors.email ? (
+                                    <p
+                                        className="alert alert-danger"
+                                        role="alert"
+                                    >
+                                        {errors.email}
+                                    </p>
+                                ) : (
+                                    ""
+                                )}
+                                <div className="input-group input_group_users">
+                                    <div className="input-group-prepend">
+                                        <span
+                                            className="input-group-text"
+                                            id="basic-addon1"
+                                        >
+                                            город проживания
+                                        </span>
+                                    </div>
+                                    <input
+                                        id="city"
+                                        type="text"
+                                        className={
+                                            errors.city
+                                                ? "form-control is-invalid"
+                                                : "form-control"
+                                        }
+                                        value={values.city}
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                {errors.city ? (
+                                    <p
+                                        className="alert alert-danger"
+                                        role="alert"
+                                    >
+                                        {errors.city}
+                                    </p>
+                                ) : (
+                                    ""
+                                )}
+                                <button
+                                    type="submit"
+                                    className="btn btn-primary"
+                                >
+                                    Редактировать
+                                </button>
+                            </form>
+                        );
+                    }}
+                </Formik>
             </AppForm>
         );
     }
