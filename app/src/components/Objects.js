@@ -87,22 +87,6 @@ export default class Objects extends React.Component {
     }
 
     render() {
-        const status_item = this.status.map((item, i) => {
-            return (
-                <option value={item} key={i}>
-                    {item}
-                </option>
-            );
-        });
-
-        const type_item = this.type.map((item, i) => {
-            return (
-                <option value={item} key={i}>
-                    {item}
-                </option>
-            );
-        });
-
         const servies = this.state.servies.map((item, i) => {
             return (
                 <li key={item.id}>
@@ -136,8 +120,18 @@ export default class Objects extends React.Component {
                     onSubmit={(values, { setSubmitting }) => {
                         const data = new FormData();
                         data.append("id", this.state.item.id);
-                        data.append("type", values.select_type);
-                        data.append("status", values.select_status);
+                        if (values.select_type === undefined) {
+                            data.append("type", values.type);
+                        } else {
+                            data.append("type", values.select_type);
+                        }
+
+                        if (values.select_status === undefined) {
+                            data.append("status", values.status);
+                        } else {
+                            data.append("status", values.select_status);
+                        }
+
                         data.append("date_include", values.date_include);
                         data.append("date_diactive", values.date_diactive);
 
@@ -168,6 +162,7 @@ export default class Objects extends React.Component {
                                     <div className="form-group">
                                         <Field
                                             component="select"
+                                            defaultValue={values.type}
                                             name="select_type"
                                             className="form-control"
                                             onChange={handleChange}
@@ -204,6 +199,7 @@ export default class Objects extends React.Component {
                                     />
                                     <div className="form-group">
                                         <Field
+                                            defaultValue={values.status}
                                             component="select"
                                             className="form-control"
                                             onChange={handleChange}

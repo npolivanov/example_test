@@ -52,10 +52,8 @@ export default class Form extends React.Component {
     }
 
     addObjects(item) {
-        console.log(item);
         let objects = this.state.obj;
         objects = objects.concat(item);
-        console.log(objects);
         this.setState({ obj: objects });
     }
 
