@@ -1,18 +1,17 @@
-import React  from "react";
+import React from "react";
 import styled from "styled-components";
 import store from "../store";
 import axios from "axios";
 import Users from "./Users";
 import "bootstrap/dist/css/bootstrap.css";
 
-
 const AppTable = styled.div`
     display: flex;
     flex-direction: column;
     max-width: 100%;
     width: 900px;
-    
-    .line{
+
+    .line {
         width: 100%;
         display: flex;
         flex-direction: wrap;
@@ -20,7 +19,7 @@ const AppTable = styled.div`
         padding: 10px;
         justify-content: space-between;
         box-sizing: border-box;
-        border: 1px solid #ccc; 
+        border: 1px solid #ccc;
         border-top: none;
     }
     .line span {
@@ -31,7 +30,7 @@ const AppTable = styled.div`
     }
     .header_line_table {
         font-weight: bold;
-        border: 1px solid #ccc; 
+        border: 1px solid #ccc;
         border-radius: 10px 10px 0px 0px;
     }
     .fullname {
@@ -40,98 +39,97 @@ const AppTable = styled.div`
 `;
 
 class Table extends React.Component {
-    constructor (psops) {
+    constructor(psops) {
         super(psops);
         this.state = {
             items: psops.args,
             viewMore: 1,
-            viewMoreText: "Посмотреть больше"
+            viewMoreText: "Посмотреть больше",
         };
-    };
+    }
 
-    axiosData () {
-        const num = parseInt(store.getState().users.length);
+    axiosData() {
+        const num = window.parseInt(store.getState().users.length);
         const _this = this;
-        _this.setState({viewMoreText: <img src={require("../giphy.gif")} style={{width: 40 }} /> });
-        axios( {
+        const imgLoader = (
+            // eslint-disable-next-line jsx-a11y/img-has-alt
+            <img src={require("../giphy.gif")} style={{ width: 40 }} />
+        );
+        // eslint-disable-next-line jsx-a11y/img-has-alt
+        _this.setState({
+            viewMoreText: imgLoader,
+        });
+        axios({
             method: "GET",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            url:"http://poliva0s.beget.tech/response.php?num="+ num,
-          })
-         .then(function (response) {
-            const data = response.data;
-            const result  = [];
-             // data to JSON format
-            data.forEach((item) => {
-                result.push(JSON.parse(item));
+            url: "http://poliva0s.beget.tech/response.php?num=" + num,
+        })
+            .then(function(response) {
+                const data = response.data;
+                let result = [];
+                // data to JSON format
+                data.forEach(item => {
+                    result.push(JSON.parse(item));
+                });
+                // add new data
+                store.dispatch({
+                    type: "ADD_ITEMS",
+                    payload: result,
+                });
+                if (result.length < 3) {
+                    _this.setState({ viewMore: 0 });
+                }
+                // change state items
+                _this.setState({ items: result });
+            })
+            .catch(function(error) {
+                alert("ошибка запроса");
+            })
+            .finally(function() {
+                // state the after request
+                _this.setState({ viewMoreText: "Посмотреть больше" });
             });
-             // add new data
-             store.dispatch({
-                 type: "ADD_ITEMS",
-                 payload: result
-             });
-            if(result.length < 3) {
-                 _this.setState({viewMore:  0 });
-            }
-             // change state items
-             _this.setState({items:  result });
-         })
-         .catch(function (error) {
-            alert("ошибка запроса");
-         })
-         .finally(function () {
-            // state the after request
-              _this.setState({viewMoreText: "Посмотреть больше" });
-         });
-    };
+    }
 
     componentDidMount() {
         // load the first three users
         this.axiosData();
-    };
+    }
 
-   render() {
+    render() {
         // subscribe to change data
         store.subscribe(() => {
-            this.setState({items: store.getState().users});
-         });
+            this.setState({ items: store.getState().users });
+        });
         // output all users
-        const listItem =  store.getState().users.map(function (item) {
-            return <Users item={item} key={item.id} />
-         }, 0);
+        const listItem = store.getState().users.map(function(item) {
+            return <Users item={item} key={item.id} />;
+        }, 0);
 
         // showing button loader
-        let button;
-        if(this.state.viewMore) {
-            button = <button onClick={this.axiosData.bind(this)} className="btn btn-primary">{ this.state.viewMoreText }</button>;
-        }else {
-            button = "";
-        };
+        const button = (
+            <button
+                onClick={this.axiosData.bind(this)}
+                className="btn btn-primary"
+            >
+                {this.state.viewMoreText}
+            </button>
+        );
 
         return (
             <AppTable>
                 <div className="line header_line_table">
-                    <span>
-                        Ф.И.О
-                    </span>
-                     <span>
-                        Телефон
-                     </span>
-                    <span>
-                        Email
-                    </span>
-                    <span>
-                        город проживания
-                    </span>
-                    <span>
-                        кол-во не отключенных объектов
-                    </span>
+                    <span>Ф.И.О</span>
+                    <span>Телефон</span>
+                    <span>Email</span>
+                    <span>город проживания</span>
+                    <span>кол-во не отключенных объектов</span>
                 </div>
-                { listItem}
-                {button}
+                {listItem}
+                {this.state.viewMore ? button : ""}
             </AppTable>
         );
-   };  
-};
+    }
+}
 
 export default Table;
