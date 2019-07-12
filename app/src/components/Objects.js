@@ -4,7 +4,8 @@ import axios from "axios";
 import "bootstrap/dist/css/bootstrap.css";
 import * as Yup from "yup";
 import { Formik, Field } from "formik";
-
+import Servies from "./Servies";
+import AddServies from "./AddServies";
 const Ul = styled.ul`
     form .item {
         display: flex;
@@ -36,9 +37,6 @@ export default class Objects extends React.Component {
             item: props.items,
             servies: [],
         };
-
-        this.status = ["Действует", "Ожидает оплаты", "Отключён"];
-        this.type = ["Недвижимость", "Авто"];
     }
     componentDidMount() {
         const data = new FormData();
@@ -62,12 +60,6 @@ export default class Objects extends React.Component {
             });
     }
 
-    changeServes(index) {
-        const servies = this.state.servies;
-        servies[index].active = servies[index].active ? "" : "активна";
-        this.setState({ servies });
-    }
-
     updateFun() {
         const data = new FormData();
         data.append("id", this.state.item.id);
@@ -85,23 +77,14 @@ export default class Objects extends React.Component {
                 return error;
             });
     }
+    updateServieses(item) {
+        const servies = this.state.servies.concat(item);
+        this.setState({ servies });
+    }
 
     render() {
-        const servies = this.state.servies.map((item, i) => {
-            return (
-                <li key={item.id}>
-                    <div className="form-check form-check-inline">
-                        <input
-                            checked={item.active}
-                            type="checkbox"
-                            onChange={this.changeServes.bind(this, i)}
-                        />
-                        <label className="form-check-label">
-                            {item.title} дата: {item.date}
-                        </label>
-                    </div>
-                </li>
-            );
+        const servies = this.state.servies.map(item => {
+            return <Servies servies={item} key={item.id} />;
         });
 
         return (
@@ -238,9 +221,15 @@ export default class Objects extends React.Component {
                     }}
                 </Formik>
                 <ol>
-                    Услуги:
+                    <h4> Услуги:</h4>
+                    <hr />
                     {servies}
                 </ol>
+
+                <AddServies
+                    id={this.state.item.id}
+                    updateServieses={this.updateServieses.bind(this)}
+                />
             </Ul>
         );
     }

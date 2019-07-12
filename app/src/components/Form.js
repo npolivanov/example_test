@@ -10,12 +10,11 @@ import { Formik } from "formik";
 const AppForm = styled.div`
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
-    align-items: center;
+    max-width: 100%;
+    width: 900px;
     .input_group_users {
         max-width: 100%;
-        width: 800px;
-        padding-top: 20px;
+        padding: 20px 0px;
     }
     .addObject {
         align-self: flex-start;
@@ -52,8 +51,7 @@ export default class Form extends React.Component {
     }
 
     addObjects(item) {
-        let objects = this.state.obj;
-        objects = objects.concat(item);
+        const objects = this.state.obj.concat(item);
         this.setState({ obj: objects });
     }
 
@@ -66,7 +64,7 @@ export default class Form extends React.Component {
             <AppForm>
                 <div>
                     <Formik
-                        onSubmit={(values, { setSubmitting }) => {
+                        onSubmit={values => {
                             const data = new FormData();
                             data.append("id", this.state.item.id);
                             data.append("fullname", values.fullname);

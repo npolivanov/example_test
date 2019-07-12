@@ -63,7 +63,6 @@ const SearchComponent = () => (
                 handleBlur,
                 handleSubmit,
             } = props;
-            let massage_requires = "";
             return (
                 // eslint-disable-next-line no-unused-expressions
                 <form onSubmit={handleSubmit}>
@@ -94,7 +93,6 @@ const SearchComponent = () => (
                     ) : (
                         ""
                     )}
-                    {massage_requires}
                 </form>
             );
         }}

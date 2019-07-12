@@ -44,10 +44,6 @@ export default class AddObjects extends React.Component {
             servies: [],
             num_rows: 0,
         };
-        this.inputBefore = this.inputBefore.bind(this);
-        this.inputAfter = this.inputAfter.bind(this);
-        this.selectType = this.selectType.bind(this);
-        this.selectStatus = this.selectStatus.bind(this);
         this.status = ["Действует", "Ожидает оплаты", "Отключён"];
         this.type = ["Недвижимость", "Авто"];
     }
@@ -73,26 +69,6 @@ export default class AddObjects extends React.Component {
             });
     }
 
-    inputAfter(event) {
-        const items = this.state.item;
-        items.date_include = event.target.value;
-        this.setState({ item: items });
-    }
-    inputBefore(event) {
-        const items = this.state.item;
-        items.date_diactive = event.target.value;
-        this.setState({ item: items });
-    }
-    selectType(event) {
-        const items = this.state.item;
-        items.type = event.target.value;
-        this.setState({ item: items });
-    }
-    selectStatus(event) {
-        const items = this.state.item;
-        items.status = event.target.value;
-        this.setState({ item: items });
-    }
     addObjects() {
         const data = new FormData();
         data.append("id", this.user_id);

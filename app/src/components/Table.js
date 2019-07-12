@@ -52,8 +52,9 @@ class Table extends React.Component {
         const num = window.parseInt(store.getState().users.length);
         const _this = this;
         const imgLoader = (
-            // eslint-disable-next-line jsx-a11y/img-has-alt
-            <img src={require("../giphy.gif")} style={{ width: 40 }} />
+            <div className="spinner-border text-light" role="status">
+                <span className="sr-only">Loading...</span>
+            </div>
         );
         // eslint-disable-next-line jsx-a11y/img-has-alt
         _this.setState({
